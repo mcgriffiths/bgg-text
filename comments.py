@@ -23,7 +23,11 @@ def analyse_comments(filename, word):
         
     results = []
     for game in gamelist:
-        rated = [comment['value'] for comment in game['comments'] if comment['rating']!='N/A']
+        try:
+            rated = [comment['value'] for comment in game['comments'] if comment['rating']!='N/A']
+        except:
+            print(game['title'])
+            continue
         freq = 100*sum(1 for i in rated if word in i.lower())/len(rated)
         results.append((game['title'],freq))
     results = pd.DataFrame(results,columns=['title','term %']).sort_values('term %',ascending=False)
