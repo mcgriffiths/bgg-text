@@ -1,0 +1,19 @@
+top 200 - not retrieved, ids slightly later
+2-300 - retrieved, complete
+3-500 - retrieved, incomplete
+
+
+100-200 retrieved 9/10
+done - also get a big list of IDs today so can redo 200+
+done - get 0-100 also
+
+designers
+games network
+mechanisms - which are most recognisable
+correlations between terms
+correlations between games with similar terms 
+correlations between user ratings and particular terms
+clustering
+'fingerprint'
+
+relative ratio? take raw number into account?
