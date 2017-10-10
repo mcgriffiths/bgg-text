@@ -3,7 +3,7 @@ top 200 - not retrieved, ids slightly later
 3-500 - retrieved, incomplete
 
 
-100-200 retrieved 9/10
+0-200 retrieved 9/10
 done - also get a big list of IDs today so can redo 200+
 done - get 0-100 also
 
