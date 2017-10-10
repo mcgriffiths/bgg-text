@@ -15,5 +15,6 @@ correlations between games with similar terms
 correlations between user ratings and particular terms
 clustering
 'fingerprint'
+ands an ors of high values with particular terms
 
 relative ratio? take raw number into account?
