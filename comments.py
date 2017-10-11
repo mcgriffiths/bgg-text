@@ -7,7 +7,19 @@ import requests
 import re
 from time import sleep
 from sklearn.cluster import KMeans
+from sklearn.metrics.pairwise import cosine_similarity
+
 #217974, 199908
+
+mechanics = ['programming','action point','area control','auction','betting','card-driven','drafting',
+             'cooperative','crayon','chit pull','deck building','dice rolling','hand management',
+             'memory','partnership','pick up','elimination','push your luck','roll and move',
+             'set collection','route building','simultaneous','stock holding','take that','tile laying',
+             'time track','trading','trick-taking','worker placement']
+
+categories = ['abstract','dexterity','euro','bluffing','card game','children','city building',
+              'civilization','collectible','deduction','economic','family','negotiation','party',
+              'political','puzzle','racing','wargame','word game']
 
 def get_ids(start, end):
     id_list = []
@@ -19,36 +31,36 @@ def get_ids(start, end):
     
     return [int(id) for id in id_list]
 
-def analyse_comments(filename, word):
-    with open(filename) as json_data:
+def get_json(top):
+    with open('top100.json') as json_data:
         gamelist = json.load(json_data)
 
     for i in range(9):
         with open('from'+str(i+1)+'00.json') as json_data:
             gamelist1 = json.load(json_data)
-        
         gamelist.extend(gamelist1)
-        
+    
+    return gamelist[:top]
+
+def analyse_comments(word,top=1000):
+    
+    gamelist = get_json(top)    
     results = []
     for game in gamelist:
         rated = [comment['value'] for comment in game['comments'] if isinstance(comment,dict) and comment['rating']!='N/A']
         matches = sum(1 for comment in rated if word in comment.lower())
         freq = 100.*matches/len(rated)
-        results.append((game['title'],matches,freq))
-    results = pd.DataFrame(results,columns=['title','matches','term %'])  
+        results.append((game['id'],game['title'],matches,freq))
+    results = pd.DataFrame(results,columns=['id','title','matches','term %']).set_index('id')  
     print(results.query('matches>2').sort_values('term %',ascending=False))
     return results
 
-def build_df(filename,wordlist):
-    with open(filename) as json_data:
-        gamelist = json.load(json_data)
-    for i in range(9):
-        with open('from'+str(i+1)+'00.json') as json_data:
-            gamelist1 = json.load(json_data)
-        gamelist.extend(gamelist1)    
+def build_df(wordlist,top=1000):
+
+    gamelist = get_json(top)
     
-    titles = [game['title'] for game in gamelist]
-    results = pd.DataFrame(titles,columns=['title'])
+    titles = [(game['id'],game['title']) for game in gamelist]
+    results = pd.DataFrame(titles,columns=['id','title']).set_index('id')
     for word in wordlist:
         game_results = []
         for game in gamelist:
@@ -56,14 +68,21 @@ def build_df(filename,wordlist):
             matches = sum(1 for comment in rated if word.lower() in comment.lower())
             freq = 100.*matches/len(rated)
             game_results.append(freq)
+        word = word.replace(" ","_").replace("-","_")
         results[word] = game_results
-        
+        results[word] = 100.*results[word]/results[word].max()
+    
     return results
 
-def cluster(filename,wordlist,clusters):
+def add_user(df,username):
+    coll = get_ratings(username)
+    results = df.reset_index().merge(coll).set_index('id')
+    print (results.corr().sort_values('rating')['rating'])
+    return results
+
+def add_cluster(df,clusters):
     model = KMeans(n_clusters=clusters)
-    df = build_df(filename,wordlist)
-    model.fit(df.loc[:,wordlist])
+    model.fit(df.select_dtypes(include=[np.number]))
     df['cluster'] = model.labels_
     return df
         
@@ -80,36 +99,23 @@ def save_comments(filename,start,end):
     with open(filename, 'w') as outfile:
         json.dump(json_output,outfile)
 
-    
-
-def analyse(game_id):
-
-    comments = get_comments(game_id)
+def word_count(game_id):
+    comments = get_comments(game_id)['comments']
     
     #strip unrated
     rated = [comment['value'] for comment in comments if comment['rating']!='N/A']
-    
-#    high = [comment['value'] for comment in rated if float(comment['rating']) >= 9]
-#    low = [comment['value'] for comment in rated if float(comment['rating']) < 6]
-    
-    highstring = ' '.join(rated)
-#    lowstring = ' '.join(low)
+    comment_string = ' '.join(rated)
 
-#    stopwords = nltk.corpus.stopwords.words('english')
-#    stopwords.extend(
-#        ['game','play','one','games','best','like','played','players','love','great','really','time','good','much','get','...','would']
-#    )
-#    highwords = nltk.tokenize.word_tokenize(highstring)
+    stopwords = nltk.corpus.stopwords.words('english')
+    stopwords.extend(
+        ['game','play','one','games','best','like','played','players','love','great','really','time','good','much','get','...','would']
+    )
+    comment_words = nltk.tokenize.word_tokenize(comment_string)
 
-    return rated
-#    return (game_id, highstring)
-#    highworddist = nltk.FreqDist(w.lower() for w in highwords if len(w)>2 and w.lower() not in stopwords)
+    word_dist = nltk.FreqDist(w.lower() for w in comment_words if len(w)>2 and w.lower() not in stopwords)
 
-#    lowwords = nltk.tokenize.word_tokenize(lowstring)
-#    lowworddist = nltk.FreqDist(w.lower() for w in lowwords if len(w)>2 and w.lower() not in stopwords)
-
-#    print(highworddist.most_common(20))
-#    print(lowworddist.most_common(20))
+    print(word_dist.most_common(20))
+    return word_dist
     
     
 def get_comments(game_id):
@@ -135,3 +141,24 @@ def get_comments(game_id):
         
     comments = {'id':game_id,'title':title,'comments':comments}
     return comments
+
+def get_ratings(username):
+    bgg = BGG()
+    collection = bgg.get_collection(username,rated=1,stats=1)
+    coll_list = collection['items']['item']
+    mycoll = []
+    for game in coll_list:
+        game_id = game['objectid']
+        title = game['name']['TEXT']
+        rating = float(game['stats']['rating']['value'])
+        mycoll.append((game_id,title,rating))
+    coll_df = pd.DataFrame(mycoll,columns=['id','title','rating']).set_index('id')  
+    return coll_df 
+
+def add_similar(df,game_id):
+    sim = cosine_similarity(df.select_dtypes(include=[np.number]))
+    colname = 'similarity_'+str(game_id)
+    df[colname] = sim[df.index.get_loc(game_id)]
+    print (df.sort_values(colname,ascending=False)[['title',colname]])
+    return df
+        
