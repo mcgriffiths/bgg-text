@@ -8,11 +8,12 @@ import re
 from time import sleep
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import cosine_similarity
+from statsmodels.formula.api import ols
 
 #217974, 199908
 
 mechanics = ['programming','action point','area control','auction','betting','card-driven','drafting',
-             'cooperative','crayon','chit pull','deck building','dice rolling','hand management',
+             'cooperative','deck building','dice rolling','hand management',
              'memory','partnership','pick up','elimination','push your luck','roll and move',
              'set collection','route building','simultaneous','stock holding','take that','tile laying',
              'time track','trading','trick-taking','worker placement']
@@ -148,7 +149,7 @@ def get_ratings(username):
     coll_list = collection['items']['item']
     mycoll = []
     for game in coll_list:
-        game_id = game['objectid']
+        game_id = int(game['objectid'])
         title = game['name']['TEXT']
         rating = float(game['stats']['rating']['value'])
         mycoll.append((game_id,title,rating))
@@ -161,4 +162,28 @@ def add_similar(df,game_id):
     df[colname] = sim[df.index.get_loc(game_id)]
     print (df.sort_values(colname,ascending=False)[['title',colname]])
     return df
+
+def fit_model(df,username):
+    user = add_user(df,username)
+    formula = ols_formula(user, 'rating', 'title')
+    model = ols(formula,user)
+    results = model.fit()
+    print (results.summary())
+    df['prediction'] = results.predict(df)
+    mycoll = get_ratings(username)
+    unrated = df[~df.index.isin(mycoll.index)]
+    print(unrated[['title','prediction']].sort_values('prediction',ascending=False))
+    return unrated
+ 
+def ols_formula(df, dependent_var, *excluded_cols):
+    '''
+    Generates the R style formula for statsmodels (patsy) given
+    the dataframe, dependent variable and optional excluded columns
+    as strings
+    '''
+    df_columns = list(df.columns.values)
+    df_columns.remove(dependent_var)
+    for col in excluded_cols:
+        df_columns.remove(col)
+    return dependent_var + ' ~ ' + ' + '.join(df_columns)
         
