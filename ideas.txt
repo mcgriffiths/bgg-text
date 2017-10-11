@@ -8,16 +8,17 @@ top 200 - not retrieved, ids slightly later
 done - also get a big list of IDs today so can redo 200+
 done - get 0-100 also
 
-- redo 200-500
+- redo 200-500 (done 400-500)
+check no duplicates
 
 designers
-games network
+games network (interrelationships of titles)
 mechanisms - which are most recognisable
-correlations between terms
+done - correlations between terms
 correlations between games with similar terms 
-correlations between user ratings and particular terms
-clustering
+done - correlations between user ratings and particular terms
+done - clustering
 'fingerprint'
-ands an ors of high values with particular terms
+done - ands an ors of high values with particular terms
 
-relative ratio? take raw number into account?
+done - relative ratio? take raw number into account?
