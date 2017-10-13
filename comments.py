@@ -9,6 +9,8 @@ from time import sleep
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import cosine_similarity
 from statsmodels.formula.api import ols
+from matplotlib import pyplot as plt
+from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 
 #predefined list of terms derived from BGG mechanics and categories.
 #would like to add to these with more descriptive terms
@@ -20,7 +22,7 @@ mechanics = ['programming','action point','area control','auction','betting','ca
 
 categories = ['abstract','dexterity','euro','bluffing','card game','children','city building',
               'civilization','collectible','deduction','economic','family','negotiation','party',
-              'political','puzzle','racing','wargame','word game']
+              'political','puzzle','racing','wargame','word game','thematic','ameritrash']
 
 #functions used in retrieving data from BGG
 def get_ids(start, end):
@@ -142,12 +144,47 @@ def add_user(df,username):
     return results
 
 def add_cluster(df,clusters):
+    if('cluster' in df.columns):
+        del df['cluster']
     """k means cluster using all numeric columns in data frame"""
     model = KMeans(n_clusters=clusters)
     model.fit(df.select_dtypes(include=[np.number]))
     df['cluster'] = model.labels_
-    return df
+    centers = model.cluster_centers_
+    for i,cluster in enumerate(centers):
+        biggest = list(cluster).index(max(list(cluster)))
+        print(list(df.columns)[biggest+1])
+#        print(df.query('cluster=='+str(i))['title'])
+    return model.cluster_centers_
 
+def secondary_cluster(df,nclusters):
+    gb = df.groupby('cluster')
+    clusterlist = [gb.get_group(x) for x in gb.groups]
+    for cluster in clusterlist:
+        print('cluster')
+        add_cluster(cluster,nclusters)
+        
+def tree_cluster(df,max_d):
+    
+    tree = linkage(df.select_dtypes(include=[np.number]), 'ward')
+    
+    # calculate full dendrogram
+    plt.figure(figsize=(25, 10))
+    plt.title('Hierarchical Clustering Dendrogram')
+    plt.xlabel('sample index')
+    plt.ylabel('distance')
+    dendrogram(
+            tree,
+#            truncate_mode = 'lastp',
+#            p=12,
+            leaf_rotation=90.,  # rotates the x axis labels
+            leaf_font_size=8.,  # font size for the x axis labels
+            )
+    plt.show()
+    clusters = fcluster(tree,max_d,criterion='distance')
+    return clusters
+
+ 
 def add_similar(df,game_id):
     """finds similar games to a specified game, based on cosine similarity"""
     sim = cosine_similarity(df.select_dtypes(include=[np.number]))

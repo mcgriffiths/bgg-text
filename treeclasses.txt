@@ -1,0 +1,61 @@
+social deduction
+cardgame
+gateway/party
+war
+abstract strategy
+dexterity
+worker placement
+heavy euro
+auction
+co-op
+economic/shares
+thematic
+
+
+
+
+euro
+card_game
+cooperative
+worker_placement
+area_control
+auction
+wargame
+family
+dexterity
+euro
+party
+abstract
+
+
+wargame - wargame/political/wargame
+worker_placement - wp/thematic/wp
+thematic - thematic/ameri/coop
+family - abstract/family/dexterity
+card_game - card/trick/hand
+euro - thematic/auction/euro
+
+
+1 = wargame
+2 = euro - theme-y?
+3 = euro - worker placement
+4 = ameritrash
+
+1 = wargame
+2 = cards/deckbuilding
+3 = abstract strategy
+4 = dexterity
+5 = euro
+6 = worker placement
+7 = thematic/co-op
+
+
+
+
+
+
+
+
+
+
+
