@@ -36,26 +36,25 @@ card_game - card/trick/hand
 euro - thematic/auction/euro
 
 
+clusters of 6 or 7 indicate 'card game' should be a category, 'worker placement' defines strategy, 'party' is subset of family
+
 1 = wargame
-2 = euro - theme-y?
+2 = euro - non WP
 3 = euro - worker placement
-4 = ameritrash
+4 = thematic
 
 1 = wargame
 2 = cards/deckbuilding
 3 = abstract strategy
 4 = dexterity
-5 = euro
+5 = euro - splits into family/heavy
 6 = worker placement
-7 = thematic/co-op
+7 = thematic - splits into AT/coop
 
 
-
-
-
-
-
-
-
+cards splits out deckbuilding? (ish)
+family splits into party/gateway
+heavy euro splits out auction
+AT splits out doam
 
 
