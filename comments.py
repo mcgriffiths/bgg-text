@@ -138,7 +138,7 @@ def get_json(top):
     return gamelist[:top]
 
 #basic analysis functions
-def analyse_comments(word,top=1500):
+def analyse_comments(word,top=2000):
     """returns data frame of matches and % frequency of specified term in comments"""
     gamelist = get_json(top)    
     results = []
@@ -154,7 +154,7 @@ def analyse_comments(word,top=1500):
     print(results.query('matches>2').sort_values('term %',ascending=False))
     return results
 
-def build_df(wordlist,top=1500):
+def build_df(wordlist,top=2000):
     """creates a data frame with % freq for each word in wordlist"""
     gamelist = get_json(top)
     
@@ -177,7 +177,7 @@ def build_df(wordlist,top=1500):
     return results
 
 
-def plot_series(word,ax=None,minyear=1990,top=1000):
+def plot_series(word,ax=None,minyear=1990):
     with open('bggdata.json') as json_data:
         bggdata = json.load(json_data)
     with open('data_from1000.json') as json_data:
@@ -199,10 +199,10 @@ def plot_series(word,ax=None,minyear=1990,top=1000):
     ax.plot(by_year.loc[minyear:].freq_comment,label=word)
     return by_year   
 
-def comparison_plot(wordlist,minyear=1990,legloc='upper right',top=1000):
+def comparison_plot(wordlist,minyear=1990,legloc='upper right'):
     fig,ax = plt.subplots()
     for word in wordlist:
-        plot_series(word,ax,minyear,top)
+        plot_series(word,ax,minyear)
     ax.legend(loc=legloc)
     fig.show()
     return fig,ax
