@@ -180,7 +180,9 @@ def build_df(wordlist,top=1500):
 def plot_series(word,ax=None,minyear=1990,top=1000):
     with open('bggdata.json') as json_data:
         bggdata = json.load(json_data)
-    
+    with open('data_from1000.json') as json_data:
+        bggdata2 = json.load(json_data)
+    bggdata.extend(bggdata2)
     results = [{'count':1, 
                 'id':int(game['id']), 
                 'year':int(game['yearpublished']['value'])} for game in bggdata]
