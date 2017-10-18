@@ -291,7 +291,6 @@ def ols_formula(df, dependent_var, excluded_cols):
     df_columns = list(df.columns.values)
     df_columns.remove(dependent_var)
     for col in excluded_cols:
-        print(col)
         df_columns.remove(col)
     return dependent_var + ' ~ ' + ' + '.join(df_columns)
         
