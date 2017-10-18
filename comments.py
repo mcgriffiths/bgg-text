@@ -191,7 +191,6 @@ def comparison_plot(wordlist,minyear=1990,legloc='upper right'):
     for word in wordlist:
         plot_series(word,ax,minyear)
     ax.legend(loc=legloc)
-    fig.show()
     return fig,ax
 
 def scatter_plot(word, var, xmin=0, xmax=None, ymin=0, ymax=None):
@@ -199,13 +198,11 @@ def scatter_plot(word, var, xmin=0, xmax=None, ymin=0, ymax=None):
     comments = analyse_comments(word)
     results = bggdata.merge(comments.reset_index()).set_index('id')
     fig,ax = plt.subplots()
-    print (results.sort_values('term %',ascending=False))
     ax.scatter(results[var],results['term %'])
     if(xmax):
         plt.xlim(xmin,xmax)
     if(ymax):
         plt.ylim(ymin,ymax)
-    fig.show()
     return fig,ax
     
 #advanced analysis functions
