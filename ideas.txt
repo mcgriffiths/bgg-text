@@ -11,14 +11,49 @@ done - get 0-100 also
 - redo 200-500 (done 400-500)
 check no duplicates
 
-designers
+done - designers
 games network (interrelationships of titles)
-mechanisms - which are most recognisable
+done - mechanisms - which are most recognisable
 done - correlations between terms
-correlations between games with similar terms 
+done - correlations between games with similar terms 
 done - correlations between user ratings and particular terms
 done - clustering
-'fingerprint'
+done - 'fingerprint'
 done - ands an ors of high values with particular terms
 
 done - relative ratio? take raw number into account?
+
+Blogposts
+
+1. Intro 
+
+- pulling the data
+- analyse_comments (titles, designers, mechanics, dynamics)
+
+2. Plots
+
+- plot_series
+- comparison_plot
+- scatter_plot
+
+3. Fingerprint (basic)
+
+- defining a 'good gene' (correlation with others, distribution, confounders, meaning)
+- build_df
+- querying for combinations
+- correlation matrix between terms (and scatterplots)
+
+4. Fingerprint (advanced)
+
+- find_cluster (kmeans + hierarchical)
+- find_similarity
+
+4. User data
+
+- user_corrs
+- fit_model
+
+5. Next steps
+
+- force-directed graph
+- better prediction model
