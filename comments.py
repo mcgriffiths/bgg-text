@@ -230,6 +230,7 @@ def find_clusters(df,clusters):
     return results
         
 def tree_cluster(df,max_d):    
+    """hierarchical cluster. print dendrogram and return games by cluster"""
     tree = linkage(df.select_dtypes(include=[np.number]), 'ward')
     
     # calculate full dendrogram
@@ -250,6 +251,7 @@ def tree_cluster(df,max_d):
     return results
 
 def like_designer(name,des_id):
+    """returns frequency of matches to 'name' excluding any designed by des_id"""
     comments = analyse_comments(name)
     comments = read_data().join(comments)
     comments = comments.query('designer!='+str(des_id))
