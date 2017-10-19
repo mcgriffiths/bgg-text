@@ -272,7 +272,6 @@ def fit_model(df,username,excluded_cols=None):
     user = df.join(ratings)
     rated = user[user.rating.notnull()]
     unrated = user[user.rating.isnull()]
-
     if excluded_cols is None:
         excluded_cols = []
     excluded_cols.append('title')
