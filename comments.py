@@ -160,9 +160,9 @@ def build_df(wordlist,top=2000):
     return results
     
 def read_data():
-    with open('bggdata_1000.json') as json_data:
+    with open('data/bggdata_1000.json') as json_data:
         bggdata = json.load(json_data)
-    with open('bggdata_2000.json') as json_data:
+    with open('data/bggdata_2000.json') as json_data:
         bggdata2 = json.load(json_data)
     bggdata.extend(bggdata2)
     results = [{'count':1, 

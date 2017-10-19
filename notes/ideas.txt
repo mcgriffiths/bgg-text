@@ -8,8 +8,8 @@ top 200 - not retrieved, ids slightly later
 done - also get a big list of IDs today so can redo 200+
 done - get 0-100 also
 
-- redo 200-500 (done 400-500)
-check no duplicates
+done redo 200-500 (done 400-500)
+done check no duplicates
 
 done - designers
 games network (interrelationships of titles)
