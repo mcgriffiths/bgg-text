@@ -92,7 +92,8 @@ def save_data(filename,retrieve_func,start,end):
     for id in id_list:
         data = retrieve_func(id)
         json_output.append(data)
-        
+    
+    filename = 'data/'+filename     
     with open(filename, 'w') as outfile:
         json.dump(json_output,outfile)
 
@@ -112,15 +113,15 @@ def get_ratings(username):
 
 def get_json(top):
     """reads in the comments data files for the top x games"""
-    with open('top100.json') as json_data:
+    with open('data/top100.json') as json_data:
         gamelist = json.load(json_data)
 
     for i in range(10):
-        with open('from'+str(i+1)+'00.json') as json_data:
+        with open('data/from'+str(i+1)+'00.json') as json_data:
             gamelist1 = json.load(json_data)
         gamelist.extend(gamelist1)
     
-    with open('from1500.json') as json_data:
+    with open('data/from1500.json') as json_data:
         gamelist2 = json.load(json_data)
     gamelist.extend(gamelist2)
     return gamelist[:top]
