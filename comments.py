@@ -144,7 +144,7 @@ def analyse_comments(word,gamelist=None,top=2000):
             freq = 100.*matches/len(rated)
         results.append((game['id'],game['title'],matches,len(rated),freq))
     results = pd.DataFrame(results,columns=['id','title','matches','total','term %']).set_index('id')  
-    return results #.sort_values('term %',ascending=False)
+    return results.sort_values('term %',ascending=False)
 
 def build_df(wordlist,top=2000):
     """creates a data frame with % freq for each word in wordlist"""
@@ -157,7 +157,7 @@ def build_df(wordlist,top=2000):
         results[word] = freq
         results[word] = 100.*results[word]/results[word].max()
     return results
-
+    
 def read_data():
     with open('bggdata_1000.json') as json_data:
         bggdata = json.load(json_data)
@@ -168,14 +168,15 @@ def read_data():
                 'id':int(game['id']), 
                 'year':int(game['yearpublished']['value']),
                 'weight':float(game['statistics']['ratings']['averageweight']['value']),
-                'playtime':int(game['maxplaytime']['value'])
+                'playtime':int(game['maxplaytime']['value']),
+                'designer':min([int(item['id']) for item in game['link'] if item['type']=='boardgamedesigner']+[999999999])
                 } for game in bggdata]
-    data_df = pd.DataFrame(results)
+    data_df = pd.DataFrame(results).set_index('id')
     return data_df
 
 def plot_series(word,ax=None,minyear=1990):
-    comments_df = analyse_comments(word)
-    results = read_data().merge(comments_df.reset_index()).set_index('id')
+    comments = analyse_comments(word)
+    results = read_data().join(comments)
     by_year = results.groupby('year').agg({'count':'count', 'term %': lambda ts: (ts > 1).sum(),'matches':sum, 'total':sum, 'weight':'mean'})    
     by_year['freq_game'] = 100.*by_year['term %']/by_year['count']
     by_year['freq_comment'] = 100.*by_year['matches']/by_year['total']
@@ -195,7 +196,7 @@ def comparison_plot(wordlist,minyear=1990,legloc='upper right'):
 def scatter_plot(word, var, xmin=0, xmax=None, ymin=0, ymax=None):
     bggdata = read_data()
     comments = analyse_comments(word)
-    results = bggdata.merge(comments.reset_index()).set_index('id')
+    results = bggdata.join(comments)
     fig,ax = plt.subplots()
     ax.scatter(results[var],results['term %'])
     if(xmax):
@@ -247,6 +248,11 @@ def tree_cluster(df,max_d):
     results = results.assign(cluster = clusters)
     return results
 
+def like_designer(name,des_id):
+    comments = analyse_comments(name)
+    comments = read_data().join(comments)
+    comments = comments.query('designer!='+str(des_id))
+    return comments.sort_values('term %',ascending=False)[['title','term %']]
  
 def find_similar(df,game_id):
     """finds similar games to a specified game, based on cosine similarity"""
