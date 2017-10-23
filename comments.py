@@ -8,6 +8,7 @@ import re
 from time import sleep
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
 from statsmodels.formula.api import ols
 from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
@@ -24,7 +25,10 @@ categories = ['abstract','dexterity','euro','bluffing','card game','children','c
               'civilization','collectible','deduction','economic','family','negotiation','party',
               'political','puzzle','racing','wargame','word game','thematic','ameritrash']
 
-dynamics = ['salad','non-gamer','opaque']
+dynamics = ['salad','non-gamer','opaque','thinky',' nasty','unforgiving',
+            'brain burn','fantasy','clever','unique','pure','social',
+            'simple','complex','fun','light','heavy']
+
 #functions used in retrieving data from BGG
 def get_ids(start, end):
     """returns a list of game IDs taken from BGG rankings pages 
@@ -147,11 +151,15 @@ def analyse_comments(word,gamelist=None,top=2000):
     results = pd.DataFrame(results,columns=['id','title','matches','total','term %']).set_index('id')  
     return results.sort_values('term %',ascending=False)
 
-def build_df(wordlist,top=2000):
+def build_df(wordlist,top=2000,add=False,df=None):
     """creates a data frame with % freq for each word in wordlist"""
     gamelist = get_json(top)    
-    titles = [(game['id'],game['title']) for game in gamelist]
-    results = pd.DataFrame(titles,columns=['id','title']).set_index('id')
+    if(add):
+        results = df
+    else:
+        titles = [(game['id'],game['title']) for game in gamelist]
+        results = pd.DataFrame(titles,columns=['id','title']).set_index('id')
+    
     for word in wordlist:
         freq = analyse_comments(word,gamelist)['term %']
         word = word.replace(" ","_").replace("-","_")
@@ -315,6 +323,25 @@ def word_count(game_id):
     word_dist = nltk.FreqDist(w.lower() for w in comment_words if len(w)>2 and w.lower() not in stopwords)
 
     return word_dist
+
+def tf_idf(top, rank):
+    game_list = get_json(top)
     
+    corpus = []
+    for game in game_list:
+        corpus.append(' '.join([comment['value'] for comment in game['comments']]))
     
+    tf = TfidfVectorizer(analyzer='word',ngram_range=(1,3),min_df=0,stop_words='english')
+    tfidf_matrix = tf.fit_transform(corpus)
+    
+    feature_names = tf.get_feature_names()
+    
+    dense = tfidf_matrix.todense()
+    game = dense[rank].tolist()[0]
+    phrase_scores = [pair for pair in zip(range(0,len(game)),game) if pair[1]>0]
+    
+    sorted_phrase_scores = sorted(phrase_scores, key = lambda t: t[1]*-1)
+    for phrase,score in [(feature_names[word_id],score) for (word_id,score) in sorted_phrase_scores][:50]:
+        print('{0: <20} {1}'.format(phrase,score))
+
 
