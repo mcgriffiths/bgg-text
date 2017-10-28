@@ -28,7 +28,7 @@ Blogposts
 1. Intro 
 
 - pulling the data
-- analyse_comments (titles, designers, mechanics, dynamics)
+- analyse_comments (titles, designers, mechanics, dynamics, themes)
 
 2. Plots
 
