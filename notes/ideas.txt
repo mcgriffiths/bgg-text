@@ -29,12 +29,14 @@ Blogposts
 
 - pulling the data
 - analyse_comments (titles, designers, mechanics, dynamics, themes)
+- like_designer
 
 2. Plots
 
 - plot_series
 - comparison_plot
 - scatter_plot
+(filler/gateway/heavy euro), (complex/deep/heavy)
 
 3. Fingerprint (basic)
 

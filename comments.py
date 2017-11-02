@@ -12,7 +12,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from statsmodels.formula.api import ols
 from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
-
+pd.set_option('display.precision',3)
 
 #predefined list of terms derived from BGG mechanics and categories.
 #would like to add to these with more descriptive terms
