@@ -23,6 +23,8 @@ done - ands an ors of high values with particular terms
 
 done - relative ratio? take raw number into account?
 
+words most strongly related to genres?
+
 Blogposts
 
 1. Intro 
@@ -35,27 +37,28 @@ Blogposts
 
 - plot_series
 - comparison_plot
-- scatter_plot
-(filler/gateway/heavy euro), (complex/deep/heavy)
+
 
 3. Fingerprint (basic)
 
 - defining a 'good gene' (correlation with others, distribution, confounders, meaning)
 - build_df
 - querying for combinations
-- correlation matrix between terms (and scatterplots)
+- correlation matrix between terms (scatterplots)
+- scatter_plot with BGG data
+(filler/gateway/heavy euro), (complex/deep/heavy)
 
 4. Fingerprint (advanced)
 
-- find_cluster (kmeans + hierarchical)
 - find_similarity
+- find_cluster (kmeans + hierarchical)
 
-4. User data
+5. User data
 
 - user_corrs
 - fit_model
 
-5. Next steps
+6. Next steps
 
-- force-directed graph
-- better prediction model
+- network graph
+- better prediction model - classifier?

@@ -132,7 +132,7 @@ def get_json(top):
     return gamelist[:top]
 
 #basic analysis functions
-def analyse_comments(word,gamelist=None,top=2000):
+def analyse_comments(word,gamelist=None,wholeword=False,top=2000):
     """returns data frame of matches and % frequency of specified term in comments"""
     if (gamelist is None):
         gamelist = get_json(top)
@@ -143,7 +143,11 @@ def analyse_comments(word,gamelist=None,top=2000):
                     if isinstance(comment,dict) 
                     and comment['rating']!='N/A' 
                     and len(comment['value'])>0]
-        matches = sum(1 for comment in rated if word in comment.lower())
+        if(wholeword):
+            r = "\\b"+word+"\\b"
+            matches = sum(1 for comment in rated if re.search(r, comment.lower()))
+        else:
+            matches = sum(1 for comment in rated if word in comment.lower())
         if (len(rated)==0 or matches < 3):
             freq = 0
         else:
