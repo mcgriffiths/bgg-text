@@ -43,7 +43,7 @@ Blogposts
 
 - defining a 'good gene' (correlation with others, distribution, confounders, meaning)
 - build_df
-- querying for combinations
+- querying for combinations of genes
 - correlation matrix between terms (scatterplots)
 - scatter_plot with BGG data
 (filler/gateway/heavy euro), (complex/deep/heavy)
