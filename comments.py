@@ -278,17 +278,26 @@ def find_similar(df,game_id):
     results = results.assign(sim = similarity.values)
     return results.sort_values('sim',ascending=False)
 
-def fit_model(df,username,excluded_cols=None):
+def fit_model(df,username,excluded_cols=None,sigthresh=0,numthresh=0):
     """fits linear regression model to given user's ratings,
     returns predictions for unrated"""
     ratings = get_ratings(username)
     user = df.join(ratings)
     rated = user[user.rating.notnull()]
     unrated = user[user.rating.isnull()]
+    
+    df_columns = list(df.columns.values)
+    
     if excluded_cols is None:
         excluded_cols = []
     excluded_cols.append('title')
-    formula = ols_formula(rated, 'rating', excluded_cols)
+    
+    for col in excluded_cols:
+        df_columns.remove(col)
+    
+    sigcols = [col for col in df_columns if len(rated[rated[col] > sigthresh]) > numthresh]
+    formula = 'rating ~ ' + ' + '.join(sigcols)   
+#    formula = ols_formula(sigcols, 'rating', excluded_cols)
     model = ols(formula,user)
     fitresult = model.fit()
     print (fitresult.summary())
